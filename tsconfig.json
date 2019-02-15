@@ -11,6 +11,7 @@
     "experimentalDecorators": true,
     "noImplicitReturns": true,
     "allowSyntheticDefaultImports": true,
+    "suppressExcessPropertyErrors": true,
     "allowUnreachableCode": false
   },
   "exclude": [
