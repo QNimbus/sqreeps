@@ -11,27 +11,34 @@ import { Mem } from 'memory/Memory';
 import { Qreep } from 'qreep/Qreep';
 import { RoleHarvester } from 'roles/instances/RoleHarvester';
 import { RoleUpgrader } from 'roles/instances/RoleUpgrader';
+import { Role } from 'roles/Role';
+
+class Directive implements IDirective {
+  public static initializeRole(flag: Flag): Role | undefined {
+    switch (flag.color) {
+      case COLOR_YELLOW: {
+        return new RoleHarvester('harvester', flag);
+      }
+      case COLOR_PURPLE: {
+        return new RoleUpgrader('upgrader', flag);
+      }
+      default: {
+        return;
+      }
+    }
+  }
+}
 
 function main(): void {
-  let harvesterRole: RoleHarvester;
-  let upgraderRole: RoleUpgrader;
-  let flagHarvest = Game.flags['Flag1'];
-  let flagController = Game.flags['Flag2'];
 
-  if (flagHarvest) {
-    harvesterRole = new RoleHarvester('harvester', flagHarvest);
-    harvesterRole.run();
-  }
+  // Get directives and initialize Roles
+  for (let flagName in Game.flags) {
+    let flag = Game.flags[flagName];
+    let role = Directive.initializeRole(flag);
 
-  if (flagController) {
-    upgraderRole = new RoleUpgrader('upgrader', flagController);
-    upgraderRole.run();
-  }
-
-  // Animate each creep
-  for (let name in Game.creeps) {
-    let qreep = new Qreep(Game.creeps[name]);
-    qreep.run();
+    if (role && role instanceof Role) {
+      role.run();
+    }
   }
 
   // Animate each spawn

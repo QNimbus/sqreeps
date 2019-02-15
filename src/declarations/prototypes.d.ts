@@ -32,6 +32,12 @@ interface ConstructionSite {
     isWalkable: boolean;
 }
 
+interface StructureContainer {
+    isFull: boolean;
+    isEmpty: boolean;
+    energy: number;
+}
+
 interface String {
     padRight(this: String, length: number, char?: string): string;
     padLeft(this: String, length: number, char?: string): string;

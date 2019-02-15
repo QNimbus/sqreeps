@@ -9,9 +9,14 @@ global.__VERSION__ = '0.0.1';
  * @returns {({} | null)}
  */
 declare function deref(ref: string): RoomObject;
-global.deref = function (refString: string): RoomObject {
-    return Game.getObjectById(refString) as RoomObject ||
-        Game.flags[refString] ||
-        Game.creeps[refString] ||
-        null;
+declare function deref(ref: { x: number, y: number, roomName: string }): RoomPosition;
+global.deref = function (ref: string | { x: number, y: number, roomName: string }): RoomObject | RoomPosition {
+    if (typeof ref === 'string') {
+        return Game.getObjectById(ref) as RoomObject ||
+            Game.flags[ref] ||
+            Game.creeps[ref] ||
+            null;
+    } else {
+        return new RoomPosition(ref.x, ref.y, ref.roomName);
+    }
 };

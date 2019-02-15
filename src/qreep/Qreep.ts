@@ -1,6 +1,6 @@
 import { isSqreep } from 'declarations/typeGuards';
-import { Tasks } from 'tasks/Tasks';
 import { Task, TASK_TARGET_RANGES } from 'tasks/Task';
+import { Tasks } from 'tasks/Tasks';
 
 export function toCreep(creep: Qreep | Creep): Creep {
     return isSqreep(creep) ? creep.creep : creep;
@@ -65,7 +65,7 @@ export class Qreep {
     get task(): Task | undefined {
         if (!this._task) {
             // initializeTask returns a new Task based on the properties in the creep memory (taskPrototype)
-            this._task = this.memory.task ? Tasks.initializeTask(this.memory.task) : undefined;
+            this._task = this.memory.task ? Tasks.initialize(this.memory.task) : undefined;
         }
         return this._task;
     }
@@ -77,6 +77,7 @@ export class Qreep {
         } else {
             this.memory.task = undefined;
         }
+        this._task = undefined;
     }
 
     get hasTask(): boolean {

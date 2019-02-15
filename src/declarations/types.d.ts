@@ -20,6 +20,11 @@ interface ITask {
 
     targetRef: string;
     creepRef: string;
+    parent?: ITask;
+}
+
+interface IDirective {
+
 }
 
 interface CreepMemory {

@@ -13,4 +13,4 @@ Object.defineProperty(RoomObject.prototype, 'link', {
         return '<a href="#!/room/' + Game.shard.name + '/' + this.pos.roomName + '">[' + this.id + ']</a>';
     },
     configurable: true,
-})
+});

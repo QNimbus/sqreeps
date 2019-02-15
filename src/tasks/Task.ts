@@ -22,6 +22,8 @@ export abstract class Task implements ITask {
     public creepRef: string;
     public targetRef: string;
 
+    public parent?: ITask;
+
     constructor(taskName: string, target: targetType) {
         this.name = taskName;
 
@@ -53,7 +55,22 @@ export abstract class Task implements ITask {
     }
 
     set target(target: targetType) {
-        this.targetRef = target.ref;
+        if (target) {
+            this.targetRef = target.ref;
+        }
+    }
+
+    // get parentTask(): Task | undefined {
+    //     return (this.parent ? Tasks.initialize(this.parent) : undefined);
+    // }
+
+    set parentTask(task: Task | undefined) {
+        this.parent = task ? task.taskPrototype : undefined;
+
+        // If task is already assigned to a Qreep, update it (taskPrototype changed due to changed parent)
+        if (this.creep) {
+            (<Qreep>this.creep).task = this;
+        }
     }
 
     get taskPrototype(): ITask {
@@ -103,9 +120,22 @@ export abstract class Task implements ITask {
         if (validTask && validTarget) {
             return true;
         } else {
-            return false;
+            this.finish();
+            return this.parent ? this.parentTask!.isValid() : false;
         }
     }
 
+    public finish(): void {
+        if (this.creep) {
+            (<Qreep>this.creep).task = this.parentTask;
+        }
+    }
 
+    public newSubTask(newTask: Task): Task {
+        newTask.parent = this;
+        if (this.creep) {
+            (<Qreep>this.creep).task = newTask;
+        }
+        return newTask;
+    }
 }

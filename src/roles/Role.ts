@@ -21,5 +21,4 @@ export abstract class Role implements IRole {
     }
 
     public abstract run(this: Role): void;
-    // public abstract getAssignment(this: Role, creep: Creep | Qreep): void;
 }

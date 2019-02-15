@@ -40,7 +40,7 @@ export class TaskTransfer extends Task {
         } else if (isEnergyStructure(target) && this.data.resourceType === RESOURCE_ENERGY) {
             return target.energy + amount <= target.energyCapacity;
         } else if (isStoreStructure(target)) {
-            return (target.storeCapacity - _.sum(target.store)) >= amount;
+            return _.sum(target.store) + amount <= target.storeCapacity;
         }
         return false;
     }

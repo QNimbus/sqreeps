@@ -1,9 +1,11 @@
-import { harvestTargetType, TaskHarvest } from 'tasks/instances/TaskHarvest';
-import { upgradeTargetType, TaskUpgrade } from 'tasks/instances/TaskUpgrade';
-import { Task } from './Task';
-import { log } from 'console/log';
+import { harvestTargetType, TaskHarvest } from './instances/TaskHarvest';
+import { upgradeTargetType, TaskUpgrade } from './instances/TaskUpgrade';
+import { TaskBuild, buildTargetType } from './instances/TaskBuild';
 import { transferTargetType, TaskTransfer } from './instances/TaskTransfer';
-import { buildTargetType, TaskBuild } from './instances/TaskBuild';
+import { log } from 'console/log';
+import { TaskInvalid } from './instances/TaskInvalid';
+
+export type TaskType = TaskHarvest | TaskUpgrade | TaskTransfer | TaskInvalid;
 
 export class Tasks {
     public static harvest(target: harvestTargetType): TaskHarvest {
@@ -22,10 +24,10 @@ export class Tasks {
         return new TaskBuild(target);
     }
 
-    public static initializeTask(taskPrototype: ITask): Task {
+    public static initialize(taskPrototype: ITask): TaskType {
         let taskName = taskPrototype.name;
         let target = deref(taskPrototype.targetRef);
-        let task: Task;
+        let task: TaskType;
 
         switch (taskName) {
             case TaskHarvest.taskName: {
@@ -54,25 +56,5 @@ export class Tasks {
         // Restore target and assigned creep onto task
         task.taskPrototype = taskPrototype;
         return task;
-    }
-}
-
-export class TaskInvalid extends Task {
-    target: any;
-
-    constructor() {
-        super('INVALID', <never>null as RoomObject);
-    }
-
-    isValidTask() {
-        return false;
-    }
-
-    isValidTarget() {
-        return false;
-    }
-
-    work() {
-        return OK;
     }
 }
