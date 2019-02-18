@@ -16,3 +16,15 @@ indent_size = 4
 [*.rb]
 indent_style = space
 indent_size = 4
+
+[{.babelrc,.stylelintrc,.eslintrc,jest.config,*.json,*.jsb3,*.jsb2,*.bowerrc}]
+indent_style=space
+indent_size=2
+
+[{*.ats,*.ts}]
+indent_style=tab
+tab_width=4
+
+[tslint.json]
+indent_style=space
+indent_size=2
