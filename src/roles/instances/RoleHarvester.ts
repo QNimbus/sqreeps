@@ -1,6 +1,7 @@
 import { Role } from '../Role';
 import { Qreep } from 'qreep/Qreep';
 import { Tasks } from 'tasks/Tasks';
+import { log } from 'console/log';
 
 export class RoleHarvester extends Role {
 
@@ -74,6 +75,6 @@ export class RoleHarvester extends Role {
     public run(this: RoleHarvester): void {
         let roleCreeps = _.map(_.filter(Game.creeps, c => c.role() === 'harvester'), (creep) => new Qreep(creep));
 
-        this._run(roleCreeps, this.handleHarvester.bind(this))
+        this.runQreeps(roleCreeps, this.handleHarvester.bind(this))
     }
 }

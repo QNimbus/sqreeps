@@ -1,8 +1,6 @@
 {
-  "rulesDirectory": "tslint-plugin-prettier",
   "extends": [
-    "tslint:recommended",
-    "tslint-config-prettier"
+    "tslint:recommended"
   ],
   "rules": {
     "forin": false,
@@ -23,7 +21,7 @@
     "trailing-comma": [
       true,
       {
-        "multiline": "always",
+        "multiline": "never",
         "singleline": "never"
       }
     ],

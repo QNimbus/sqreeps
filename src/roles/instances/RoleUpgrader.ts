@@ -49,7 +49,7 @@ export class RoleUpgrader extends Role {
         if (this.controller) {
             let roleCreeps = _.map(_.filter(Game.creeps, c => c.role() === 'upgrader'), (creep) => new Qreep(creep));
 
-            this._run(roleCreeps, this.handleUpgrader.bind(this))
+            this.runQreeps(roleCreeps, this.handleUpgrader.bind(this))
         }
     }
 }

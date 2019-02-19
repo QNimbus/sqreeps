@@ -1,6 +1,18 @@
 import { isSqreep } from "declarations/typeGuards";
-import { Task, TASK_TARGET_RANGES } from "tasks/Task";
-import { initializer } from "tasks/initializer";
+import { Task } from "tasks/Task";
+import { Tasks } from "tasks/Tasks";
+import { log } from "console/log";
+
+export const TASK_TARGET_RANGES = {
+	BUILD: 3,
+	REPAIR: 3,
+	UPGRADE: 3,
+	TRANSFER: 1,
+	WITHDRAW: 1,
+	HARVEST: 1,
+	DROP: 0,
+	GOTO: 1,
+};
 
 export function toCreep(creep: Qreep | Creep): Creep {
 	return isSqreep(creep) ? creep.creep : creep;
@@ -73,18 +85,16 @@ export class Qreep {
 		if (!this._task) {
 			// initializeTask returns a new Task based on the properties in the creep memory (taskPrototype)
 			this._task = this.memory.task
-				? initializer(this.memory.task)
+				? Tasks.initialize(this.memory.task)
 				: undefined;
 		}
 		return this._task;
 	}
 
 	set task(task: Task | undefined) {
+		this.memory.task = task ? task.taskPrototype : undefined;
 		if (task) {
 			task.creep = this;
-			this.memory.task = task.taskPrototype;
-		} else {
-			this.memory.task = undefined;
 		}
 		this._task = undefined;
 	}
@@ -122,11 +132,11 @@ export class Qreep {
 			try {
 				// let role = roles(roleName);
 				// role.run(this);
-			} catch (e) {}
+			} catch (e) { }
 		}
 	}
 
-	public run = function(this: Qreep): number | undefined {
+	public run = function (this: Qreep): number | undefined {
 		if (this.task) {
 			return this.task.run();
 		}
@@ -249,7 +259,7 @@ export class Qreep {
 	 * @param {string} role
 	 * @returns {(string | undefined)}
 	 */
-	public static generateName = function(role: string): string | undefined {
+	public static generateName = function (role: string): string | undefined {
 		let currentCount = Qreep.countCreeps(role);
 		let candidateNames = [...Array(currentCount + 1)].map(
 			(_, index) => `${role}${index + 1}`
@@ -266,7 +276,7 @@ export class Qreep {
 		return undefined;
 	};
 
-	public static countCreeps = function(role?: string): number {
+	public static countCreeps = function (role?: string): number {
 		return _.filter(Game.creeps, creep =>
 			role ? creep.memory.role === role : true
 		).length;

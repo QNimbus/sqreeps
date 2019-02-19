@@ -9,18 +9,16 @@ declare namespace NodeJS {
     }
 }
 
+interface IPos {
+    x: number;
+    y: number;
+    roomName: string;
+}
+
 interface IRole {
     name: string;
 
     pos: RoomPosition;
-}
-
-interface ITask {
-    name: string;
-
-    targetRef: string;
-    creepRef: string;
-    parent?: ITask;
 }
 
 interface IDirective {

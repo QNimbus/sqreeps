@@ -37,20 +37,20 @@ export default {
 			"// _____________________ Screeps AI ______________________\n" +
 			"//\n" +
 			"//\n" +
-			"// Overmind repository: github.com/qnimbus/sqreeps\n" +
+			"// Sqreeps AI repository: github.com/qnimbus/sqreeps\n" +
 			"//\n",
 	},
 
 	plugins: [
-		progress({ clearLine: true }),
 		clear({ targets: ["dist"] }),
+		progress({ clearLine: true }),
 		resolve(),
 		commonjs(),
 		typescript({ tsconfig: "./tsconfig.json" }),
 		screeps({ config: cfg, dryRun: cfg == null }),
 	],
 
-	onwarn: function(warning) {
+	onwarn: function (warning) {
 		// Skip default export warnings from using obfuscated overmind file in main
 		for (let ignoreWarning of ignoreWarnings) {
 			if (warning.toString().includes(ignoreWarning)) {

@@ -10,7 +10,7 @@ export abstract class Role implements IRole {
         this.pos = obj.pos;
     }
 
-    public _run(this: Role, roleCreeps: Array<Qreep>, taskHandler: (creep: Qreep) => void): void {
+    public runQreeps(this: Role, roleCreeps: Array<Qreep>, taskHandler: (creep: Qreep) => void): void {
         for (let creep of roleCreeps) {
             if (creep.isIdle) {
                 // Assign new task to creep

@@ -1,5 +1,6 @@
+import { Task } from 'tasks/Task';
 import { EnergyStructure, StoreStructure, isEnergyStructure, isStoreStructure } from 'declarations/typeGuards';
-import { Task, TASK_TARGET_RANGES } from 'tasks/Task';
+import { TASK_TARGET_RANGES } from 'qreep/Qreep';
 
 export type transferTargetType =
     EnergyStructure
@@ -14,8 +15,8 @@ export class TaskTransfer extends Task {
         amount?: number
     }
 
-    constructor(target: transferTargetType, resourceType: ResourceConstant = RESOURCE_ENERGY, amount?: number) {
-        super(TaskTransfer.taskName, target);
+    constructor(target: transferTargetType, resourceType: ResourceConstant = RESOURCE_ENERGY, amount?: number, settings?: ITaskSettings, alias?: string) {
+        super(TaskTransfer.taskName, target, settings, alias);
 
         this.settings.targetRange = TASK_TARGET_RANGES.TRANSFER;
 
@@ -27,13 +28,13 @@ export class TaskTransfer extends Task {
 
     public isValidTask(): boolean {
         let amount = this.data.amount || 1;
-        let cargo = (<Creep>this.creep).carry[this.data.resourceType] || 0;
+        let cargo = !!this.creep && this.creep.carry[this.data.resourceType] || 0;
         return cargo >= amount;
     }
 
     public isValidTarget(): boolean {
         let amount = this.data.amount || 1;
-        let target = this.target;
+        let target = this.target as transferTargetType;
 
         if (target instanceof Creep) {
             return (target.carryCapacity - _.sum(target.carry)) >= amount;
@@ -46,6 +47,6 @@ export class TaskTransfer extends Task {
     }
 
     public work(): number {
-        return (<Creep>this.creep).transfer((<transferTargetType>this.target), this.data.resourceType, this.data.amount);
+        return this.creep!.transfer((this.target as transferTargetType), this.data.resourceType, this.data.amount);
     }
 }

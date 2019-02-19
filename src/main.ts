@@ -8,10 +8,10 @@ import { log } from 'console/log';
 import { sandbox } from 'sandbox';
 import { SqreepsConsole } from 'console/console';
 import { Mem } from 'memory/Memory';
-import { Qreep } from 'qreep/Qreep';
 import { RoleHarvester } from 'roles/instances/RoleHarvester';
 import { RoleUpgrader } from 'roles/instances/RoleUpgrader';
 import { Role } from 'roles/Role';
+import { RoleTester } from 'roles/instances/RoleTester';
 
 class Directive implements IDirective {
   public static initializeRole(flag: Flag): Role | undefined {
@@ -21,6 +21,9 @@ class Directive implements IDirective {
       }
       case COLOR_PURPLE: {
         return new RoleUpgrader('upgrader', flag);
+      }
+      case COLOR_BROWN: {
+        return new RoleTester('tester', flag);
       }
       default: {
         return;

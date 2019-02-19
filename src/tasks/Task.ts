@@ -1,97 +1,175 @@
-import { initializer } from "./initializer";
 import { Qreep } from "qreep/Qreep";
+import { Tasks } from "./Tasks";
+import { log } from "console/log";
 
-type targetType = RoomObject;
+// type targetType = RoomObject;
+type targetType = { ref: string; pos: IPos };
 
-export const TASK_TARGET_RANGES = {
-	BUILD: 3,
-	REPAIR: 3,
-	UPGRADE: 3,
-	TRANSFER: 1,
-	WITHDRAW: 1,
-	HARVEST: 1,
-	DROP: 0,
-};
+/**
+ * Task class
+ *
+ * Class to encapuslate a task that is performed by a Creep; Task has a target (and target position) and will move th assigned creep
+ * to the target position to perform the task until the task condition is no longer valid. It's possible to chain multiple tasks together
+ * so that when a task finished, the next task is fetched.
+ *
+ * The Task constructor needs a task name and a target as a minumum.
+ *
+ * @export
+ * @abstract
+ * @class Task
+ */
+export abstract class Task {
+	public name: string; // Name of the Task (e.g. 'goto', 'build', 'harvest', etc)
+	public alias: string; // Alias for Task (defaults to the Task name if not specified)
 
-export abstract class Task implements ITask {
-	public name: string;
-	public settings: {
-		targetRange: number;
-		nextPos?: RoomPosition;
-	};
+	public settings: ITaskSettings; // Settings object for Task - allows for some customization
+	public creepRef: ICreepRef; // Reference to creep assigned to Task (Game.creeps[creepRef.name])
+	public targetRef: ITargetRef; // Reference to target associated with Task (ref and pos)
 
-	public creepRef: string;
-	public targetRef: string;
+	public nextTaskRef?: ITask; // Serialized task data for next Task (optional)
 
-	public parent?: ITask;
+	// Local cache for Task properties
+	private _target?: targetType;
+	private _targetPos: RoomPosition;
+	private _creep?: Qreep;
 
-	constructor(taskName: string, target: targetType) {
+	constructor(
+		taskName: string,
+		target: targetType,
+		settings: ITaskSettings = {},
+		alias?: string
+	) {
 		this.name = taskName;
+		this.alias = alias ? alias : taskName;
 
-		this.creepRef = this.targetRef = "";
+		this.creepRef = { name: "" };
+		this.targetRef = {
+			ref: "",
+			pos: {
+				x: -1,
+				y: -1,
+				roomName: "",
+			},
+		};
 
 		this.target = target;
 
-		this.settings = {
+		this.settings = _.defaults(settings, {
 			targetRange: 1,
-		};
+			nextPos: undefined,
+		});
 	}
 
 	// Properties
 
-	get isWorking(): boolean {
+	/**
+	 * Returns true if task has a creep assigned and is within the required range of the target
+	 *
+	 * @readonly
+	 * @type {boolean}
+	 * @memberof Task
+	 */
+	get isNearTarget(): boolean {
 		return (
-			this.creep !== undefined &&
-			(<Creep>this.creep!).pos.inRangeTo(
-				(<targetType>this.target).pos,
-				this.settings.targetRange
+			this.hasCreepAssigned &&
+			this.creep!.pos.inRangeTo(
+				this.targetPos,
+				this.settings.targetRange!
 			)
 		);
 	}
 
-	get creep(): Creep | Qreep {
-		return Game.creeps[this.creepRef];
+	/**
+	 * Returns true if task has a Qreep assigned
+	 *
+	 * @readonly
+	 * @type {boolean}
+	 * @memberof Task
+	 */
+	get hasCreepAssigned(): boolean {
+		return Boolean(this.creepRef.name);
 	}
 
-	set creep(creep: Creep | Qreep) {
-		this.creepRef = creep.name;
+	/**
+	 * Getter for assigned Qreep
+	 *
+	 * @type {(Qreep | undefined)}
+	 * @memberof Task
+	 */
+	get creep(): Qreep | undefined {
+		if (!this._creep) {
+			this._creep = this.creepRef.name
+				? new Qreep(Game.creeps[this.creepRef.name])
+				: undefined;
+		}
+		return this._creep;
 	}
 
-	get target(): targetType {
-		return deref(this.targetRef);
+	/**
+	 * Setter for assigned Qreep
+	 *
+	 * @memberof Task
+	 */
+	set creep(creep: Qreep | undefined) {
+		this.creepRef.name = creep ? creep.name : undefined;
+		this._creep = creep;
 	}
 
-	set target(target: targetType) {
+	get target(): targetType | undefined {
+		if (!this._target) {
+			this._target = deref(this.targetRef.ref);
+		}
+		return this._target;
+	}
+
+	set target(target: targetType | undefined) {
 		if (target) {
-			this.targetRef = target.ref;
+			this.targetRef.ref = target.ref;
+			this.targetRef.pos = target.pos;
+			this._target = target;
 		}
 	}
 
-	get parentTask(): Task | undefined {
-		return this.parent ? initializer(this.parent) : undefined;
+	get targetPos(): RoomPosition {
+		if (!this._targetPos) {
+			this._targetPos = derefRoomPosition(this.targetRef.pos);
+		}
+		return this._targetPos;
 	}
 
-	set parentTask(task: Task | undefined) {
-		this.parent = task ? task.taskPrototype : undefined;
+	get nextTask(): Task | undefined {
+		return this.nextTaskRef
+			? Tasks.initialize(this.nextTaskRef)
+			: undefined;
+	}
+
+	set nextTask(task: Task | undefined) {
+		this.nextTaskRef = task ? task.taskPrototype : undefined;
 
 		// If task is already assigned to a Qreep, update it (taskPrototype changed due to changed parent)
-		if (this.creep) {
-			(<Qreep>this.creep).task = this;
+		if (this.hasCreepAssigned) {
+			this.creep!.task = this;
 		}
 	}
 
 	get taskPrototype(): ITask {
 		return {
 			name: this.name,
+			alias: this.alias,
 			targetRef: this.targetRef,
 			creepRef: this.creepRef,
+			nextTaskRef: this.nextTaskRef,
+			settings: this.settings,
 		};
 	}
 
 	set taskPrototype(taskPrototype: ITask) {
 		this.name = taskPrototype.name;
+		this.alias = taskPrototype.alias;
 		this.targetRef = taskPrototype.targetRef;
 		this.creepRef = taskPrototype.creepRef;
+		this.nextTaskRef = taskPrototype.nextTaskRef;
+		this.settings = taskPrototype.settings;
 	}
 
 	// Methods
@@ -101,7 +179,7 @@ export abstract class Task implements ITask {
 	public abstract work(): number;
 
 	public run(): number | undefined {
-		if (this.isWorking) {
+		if (this.isNearTarget) {
 			let result = this.work();
 			return result;
 		} else {
@@ -111,41 +189,56 @@ export abstract class Task implements ITask {
 	}
 
 	public moveToTarget(): void {
-		(<Creep>this.creep).moveTo((<targetType>this.target).pos, {
-			range: this.settings.targetRange,
-		});
+		this.hasCreepAssigned &&
+			this.creep!.moveTo(this.targetPos, {
+				range: this.settings.targetRange,
+			});
 	}
 
 	public moveToNextPos(): void {
 		if (this.settings.nextPos) {
-			(<Creep>this.creep).moveTo(this.settings.nextPos, {
-				range: this.settings.targetRange,
-			});
+			let nextPos = derefRoomPosition(this.settings.nextPos);
+			this.hasCreepAssigned && this.creep!.moveTo(nextPos);
 		}
 	}
 
 	public isValid(): boolean {
-		let validTask = this.creep && this.isValidTask();
-		let validTarget = this.target && this.isValidTarget();
+		let validTask = this.creepRef.name && this.isValidTask();
+		let validTarget = this.targetRef.ref && this.isValidTarget();
 
 		if (validTask && validTarget) {
 			return true;
 		} else {
+			let isValid = false;
+			if (this.nextTaskRef) {
+				// Assign creep to next task in queue
+				this.nextTask!.creep = this.creep;
+				isValid = this.nextTask!.isValid();
+			}
 			this.finish();
-			return this.parent ? this.parentTask!.isValid() : false;
+			return isValid;
 		}
 	}
 
 	public finish(): void {
-		if (this.creep) {
-			(<Qreep>this.creep).task = this.parentTask;
+		this.moveToNextPos();
+		if (this.hasCreepAssigned) {
+			this.creep!.task = this.nextTask;
+		} else {
+			log.debug(
+				`No creep executing ${this.name}! Task: ${JSON.stringify(
+					this.taskPrototype,
+					undefined,
+					"\t"
+				)}`
+			);
 		}
 	}
 
-	public newSubTask(newTask: Task): Task {
-		newTask.parent = this;
-		if (this.creep) {
-			(<Qreep>this.creep).task = newTask;
+	public appendTask(newTask: Task): Task {
+		newTask.nextTask = this;
+		if (this.hasCreepAssigned) {
+			this.creep!.task = newTask;
 		}
 		return newTask;
 	}

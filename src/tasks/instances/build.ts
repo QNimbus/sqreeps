@@ -1,4 +1,5 @@
-import { Task, TASK_TARGET_RANGES } from 'tasks/Task';
+import { Task } from 'tasks/Task';
+import { TASK_TARGET_RANGES } from 'qreep/Qreep';
 
 export type buildTargetType = ConstructionSite;
 
@@ -6,14 +7,14 @@ export class TaskBuild extends Task {
 
     public static taskName = 'build';
 
-    constructor(target: buildTargetType) {
-        super(TaskBuild.taskName, target);
+    constructor(target: buildTargetType, settings?: ITaskSettings, alias?: string) {
+        super(TaskBuild.taskName, target, settings, alias);
 
         this.settings.targetRange = TASK_TARGET_RANGES.BUILD;
     }
 
     public isValidTask(): boolean {
-        return (<Creep>this.creep).carry.energy > 0;
+        return !!this.creep && this.creep.carry.energy > 0;
     }
 
     public isValidTarget(): boolean {
@@ -22,6 +23,6 @@ export class TaskBuild extends Task {
     }
 
     public work(): number {
-        return (<Creep>this.creep).build(<buildTargetType>this.target);
+        return this.creep!.build(this.target as buildTargetType);
     }
 }
