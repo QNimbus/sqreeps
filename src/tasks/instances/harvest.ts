@@ -1,6 +1,7 @@
 import { Task } from 'tasks/Task';
 import { isSource } from 'declarations/typeGuards';
 import { TASK_TARGET_RANGES } from 'qreep/Qreep';
+import { log } from 'console/log';
 
 export type harvestTargetType = Source | Mineral;
 
@@ -8,10 +9,11 @@ export class TaskHarvest extends Task {
 	public static taskName = 'harvest';
 	public target: harvestTargetType;
 
-	constructor(target: harvestTargetType, settings?: ITaskSettings, alias?: string) {
-		super(TaskHarvest.taskName, target, settings, alias);
+	constructor(target: harvestTargetType, settings: ITaskSettings = {}, alias?: string) {
+		// Settings
+		settings = _.defaults(settings, { targetRange: TASK_TARGET_RANGES.HARVEST } as ITaskSettings);
 
-		this.settings.targetRange = TASK_TARGET_RANGES.HARVEST;
+		super(TaskHarvest.taskName, target, settings, alias);
 	}
 
 	public isValidTask(): boolean {

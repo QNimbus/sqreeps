@@ -17,12 +17,13 @@ export class TaskTransfer extends Task {
 		target: transferTargetType,
 		resourceType: ResourceConstant = RESOURCE_ENERGY,
 		amount?: number,
-		settings?: ITaskSettings,
+		settings: ITaskSettings = {},
 		alias?: string
 	) {
-		super(TaskTransfer.taskName, target, settings, alias);
+		// Settings
+		settings = _.defaults(settings, { targetRange: TASK_TARGET_RANGES.TRANSFER } as ITaskSettings);
 
-		this.settings.targetRange = TASK_TARGET_RANGES.TRANSFER;
+		super(TaskTransfer.taskName, target, settings, alias);
 
 		this.data = {
 			resourceType: resourceType,

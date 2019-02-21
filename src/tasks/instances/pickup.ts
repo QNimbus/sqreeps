@@ -8,11 +8,11 @@ export class TaskPickup extends Task {
 
 	public target: pickupTargetType;
 
-	constructor(target: pickupTargetType, settings?: ITaskSettings, alias?: string) {
-		super(TaskPickup.taskName, target, settings, alias);
-
+	constructor(target: pickupTargetType, settings: ITaskSettings = {}, alias?: string) {
 		// Settings
-		this.settings.targetRange = TASK_TARGET_RANGES.PICKUP;
+		settings = _.defaults(settings, { targetRange: TASK_TARGET_RANGES.PICKUP, once: true } as ITaskSettings);
+
+		super(TaskPickup.taskName, target, settings, alias);
 	}
 
 	public isValidTask(): boolean {

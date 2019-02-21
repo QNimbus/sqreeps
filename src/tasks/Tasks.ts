@@ -84,32 +84,32 @@ export class Tasks {
 		return task;
 	}
 
-	public static harvest(target: harvestTargetType, alias?: string): TaskHarvest {
-		return new TaskHarvest(target, undefined, alias);
+	public static harvest(target: harvestTargetType, settings?: ITaskSettings, alias?: string): TaskHarvest {
+		return new TaskHarvest(target, settings, alias);
 	}
 
-	public static upgrade(target: upgradeTargetType, alias?: string): TaskUpgrade {
-		return new TaskUpgrade(target, undefined, alias);
+	public static upgrade(target: upgradeTargetType, settings?: ITaskSettings, alias?: string): TaskUpgrade {
+		return new TaskUpgrade(target, settings, alias);
 	}
 
-	public static transfer(target: transferTargetType, alias?: string): TaskTransfer {
-		return new TaskTransfer(target, undefined, undefined, undefined, alias);
+	public static transfer(target: transferTargetType, resourceType: ResourceConstant = RESOURCE_ENERGY, amount?: number, settings?: ITaskSettings, alias?: string): TaskTransfer {
+		return new TaskTransfer(target, resourceType, amount, settings, alias);
 	}
 
-	public static build(target: buildTargetType, alias?: string): TaskBuild {
-		return new TaskBuild(target, undefined, alias);
+	public static build(target: buildTargetType, settings?: ITaskSettings, alias?: string): TaskBuild {
+		return new TaskBuild(target, settings, alias);
 	}
 
-	public static repair(target: repairTargetType, alias?: string): TaskRepair {
-		return new TaskRepair(target, undefined, alias);
+	public static repair(target: repairTargetType, settings?: ITaskSettings, alias?: string): TaskRepair {
+		return new TaskRepair(target, settings, alias);
 	}
 
-	public static goto(target: gotoTargetType, alias?: string): TaskGoto {
-		return new TaskGoto(target, undefined, alias);
+	public static goto(target: gotoTargetType, settings?: ITaskSettings, alias?: string): TaskGoto {
+		return new TaskGoto(target, settings, alias);
 	}
 
-	public static drop(target: dropTargetType, alias?: string): TaskDrop {
-		return new TaskDrop(target, undefined, undefined, undefined, alias);
+	public static drop(target: dropTargetType, resourceType: ResourceConstant = RESOURCE_ENERGY, amount?: number, settings?: ITaskSettings, alias?: string): TaskDrop {
+		return new TaskDrop(target, resourceType, amount, settings, alias);
 	}
 
 	public static invalid(): TaskInvalid {

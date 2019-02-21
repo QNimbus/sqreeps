@@ -15,7 +15,7 @@ export class TaskDrop extends Task {
 		target: dropTargetType,
 		resourceType: ResourceConstant = RESOURCE_ENERGY,
 		amount?: number,
-		settings?: ITaskSettings,
+		settings: ITaskSettings = {},
 		alias?: string
 	) {
 		let targetPos: RoomPosition;
@@ -25,10 +25,10 @@ export class TaskDrop extends Task {
 			targetPos = target;
 		}
 
-		super(TaskDrop.taskName, { ref: 'pos', pos: targetPos }, settings, alias);
-
 		// Settings
-		this.settings.targetRange = TASK_TARGET_RANGES.DROP;
+		settings = _.defaults(settings, { targetRange: TASK_TARGET_RANGES.DROP, once: true } as ITaskSettings);
+
+		super(TaskDrop.taskName, { ref: 'pos', pos: targetPos }, settings, alias);
 
 		this.data = {
 			resourceType: resourceType,

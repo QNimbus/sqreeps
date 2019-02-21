@@ -48,13 +48,7 @@ export class RoleHarvester extends Role {
 
         // Do we have a container construction site nearby?
         if (this.constructionSite) {
-            if (!harvester.isFull) {
-                // Harvest energy until full
-                harvester.task = Tasks.harvest(source);
-            } else {
-                // Build container
-                harvester.task = Tasks.build(this.constructionSite!);
-            }
+            harvester.task = Tasks.chain([Tasks.harvest(source), Tasks.build(this.constructionSite)]);
             return;
         }
 
@@ -79,17 +73,14 @@ export class RoleHarvester extends Role {
             }
             return;
         } else {
-            if (!harvester.isFull) {
-                harvester.task = Tasks.harvest(source);
-            } else {
-                harvester.task = Tasks.transfer(Game.spawns['Spawn1']);
-            }
+            harvester.task = Tasks.chain([Tasks.harvest(source), Tasks.transfer(Game.spawns['Spawn1'])]);
+            return;
         }
     }
 
     public run(this: RoleHarvester): void {
-        let roleCreeps = _.map(_.filter(Game.creeps, c => c.role() === 'harvester'), (creep) => new Qreep(creep));
+        let harvesters = _.map(_.filter(Game.creeps, c => c.role() === 'harvester'), (creep) => new Qreep(creep));
 
-        this.runQreeps(roleCreeps, this.handleHarvester.bind(this))
+        this.runQreeps(harvesters, harvester => this.handleHarvester(harvester));
     }
 }

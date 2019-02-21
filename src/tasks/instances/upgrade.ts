@@ -8,10 +8,11 @@ export class TaskUpgrade extends Task {
 
 	public target: upgradeTargetType;
 
-	constructor(target: upgradeTargetType, settings?: ITaskSettings, alias?: string) {
-		super(TaskUpgrade.taskName, target, settings, alias);
+	constructor(target: upgradeTargetType, settings: ITaskSettings = {}, alias?: string) {
+		// Settings
+		settings = _.defaults(settings, { targetRange: TASK_TARGET_RANGES.UPGRADE } as ITaskSettings);
 
-		this.settings.targetRange = TASK_TARGET_RANGES.UPGRADE;
+		super(TaskUpgrade.taskName, target, settings, alias);
 	}
 
 	public isValidTask(): boolean {
@@ -27,5 +28,5 @@ export class TaskUpgrade extends Task {
 		return this.creep!.upgradeController(this.target);
 	}
 
-	public onAssign(): void {}
+	public onAssign(): void { }
 }

@@ -18,11 +18,11 @@ StructureSpawn.prototype.run = function (this: StructureSpawn): void {
         maxHarvesters = 2;
     }
 
-    if (countCreeps('harvester') < 4) {
+    if (countCreeps('harvester') < 2) {
         this.maxCreep('harvester');
     } else if (countCreeps('tester') < 1) {
         this.maxCreep('tester');
-    } else if (countCreeps('upgrader') < 4) {
+    } else if (countCreeps('upgrader') < 2) {
         this.maxCreep('upgrader');
     }
 }

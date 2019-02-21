@@ -8,7 +8,7 @@ export class TaskGoto extends Task {
 
     public static taskName = 'goto';
 
-    constructor(target: gotoTargetType, settings?: ITaskSettings, alias?: string) {
+    constructor(target: gotoTargetType, settings: ITaskSettings = {}, alias?: string) {
         let targetPos: RoomPosition;
         if (hasPos(target)) {
             targetPos = target.pos;
@@ -16,10 +16,10 @@ export class TaskGoto extends Task {
             targetPos = target;
         }
 
-        super(TaskGoto.taskName, { ref: 'pos', pos: targetPos }, settings, alias);
-
         // Settings
-        this.settings.targetRange = TASK_TARGET_RANGES.GOTO;
+        settings = _.defaults(settings, { targetRange: TASK_TARGET_RANGES.GOTO } as ITaskSettings);
+
+        super(TaskGoto.taskName, { ref: 'pos', pos: targetPos }, settings, alias);
     }
 
     public isValidTask(): boolean {

@@ -1,7 +1,6 @@
 import { Role } from '../Role';
 import { Qreep } from 'qreep/Qreep';
 import { Tasks } from 'tasks/Tasks';
-import { log } from 'console/log';
 
 export class RoleTester extends Role {
 
@@ -16,10 +15,10 @@ export class RoleTester extends Role {
         let source = _.first(sources);
 
         tester.task = Tasks.chain([
-            Tasks.goto(source, 'Go to source'),
-            Tasks.harvest(source, 'Harvest source'),
-            Tasks.goto(spawn, 'Go to spawn'),
-            Tasks.transfer(spawn, 'Transfer energy to spawn')
+            Tasks.goto(source, undefined, 'Go to source'),
+            Tasks.harvest(source, { once: true } as ITaskSettings, 'Harvest source'),
+            Tasks.goto(spawn, undefined, 'Go to spawn'),
+            Tasks.transfer(spawn, undefined, undefined, undefined, 'Transfer energy to spawn')
         ]);
     }
 

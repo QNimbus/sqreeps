@@ -34,29 +34,18 @@ export class RoleUpgrader extends Role {
         }
     }
 
-    // public getAssignment(this: RoleUpgrader, creep: Qreep): void {
-    //     let controller = Game.rooms[creep.pos.roomName].controller as StructureController;
-
-    //     if (controller && controller.my) {
-    //         creep.memory.target = controller.id;
-    //         log.debug(`Creep '${creep.name}' assigned to room controller: '${creep.memory.target}'`);
-    //     } else {
-    //         log.debug(`Unable to give creep '${creep.name}' an upgrading assignment`);
-    //     }
-    // }
-
     public handleUpgrader(upgrader: Qreep): void {
         let source = this.source as Source;
+        let controller = this.controller as StructureController;
 
         // Do we have a container construction site nearby?
         if (this.constructionSite) {
-            if (!upgrader.isFull) {
-                // Harvest energy until full
-                upgrader.task = Tasks.harvest(source);
-            } else {
-                // Build container
-                upgrader.task = Tasks.build(this.constructionSite!);
-            }
+            upgrader.task = Tasks.chain([
+                Tasks.harvest(source, undefined, 'Harvest source'),
+                Tasks.build(this.constructionSite, undefined, 'Build container'),
+                Tasks.harvest(source, undefined, 'Harvest source'),
+                Tasks.upgrade(controller, undefined, 'Upgrade controller')
+            ]);
             return;
         }
 
@@ -65,14 +54,13 @@ export class RoleUpgrader extends Role {
         } else {
             upgrader.task = Tasks.harvest(this.source!);
         }
-
     }
 
     public run(this: RoleUpgrader): void {
         if (this.controller) {
-            let roleCreeps = _.map(_.filter(Game.creeps, c => c.role() === 'upgrader'), (creep) => new Qreep(creep));
+            let upgraders = _.map(_.filter(Game.creeps, c => c.role() === 'upgrader'), (creep) => new Qreep(creep));
 
-            this.runQreeps(roleCreeps, this.handleUpgrader.bind(this));
+            this.runQreeps(upgraders, upgrader => this.handleUpgrader(upgrader));
         }
     }
 }

@@ -8,10 +8,11 @@ export class TaskBuild extends Task {
 
 	public target: buildTargetType;
 
-	constructor(target: buildTargetType, settings?: ITaskSettings, alias?: string) {
-		super(TaskBuild.taskName, target, settings, alias);
+	constructor(target: buildTargetType, settings: ITaskSettings = {}, alias?: string) {
+		// Settings
+		settings = _.defaults(settings, { targetRange: TASK_TARGET_RANGES.BUILD } as ITaskSettings);
 
-		this.settings.targetRange = TASK_TARGET_RANGES.BUILD;
+		super(TaskBuild.taskName, target, settings, alias);
 	}
 
 	public isValidTask(): boolean {

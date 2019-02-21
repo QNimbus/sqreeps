@@ -1,7 +1,6 @@
 import { Qreep } from 'qreep/Qreep';
 import { Tasks } from './Tasks';
 import { log } from 'console/log';
-import { nullTargetRef, nullCreepRef } from 'utils/types';
 
 type targetType = { ref: string; pos: IPos };
 
@@ -37,8 +36,15 @@ export abstract class Task {
 		this.name = taskName;
 		this.alias = alias ? alias : taskName;
 
-		this.creepRef = nullCreepRef;
-		this.targetRef = nullTargetRef;
+		this.creepRef = { name: '' };
+		this.targetRef = {
+			ref: '',
+			pos: {
+				x: -1,
+				y: -1,
+				roomName: '',
+			},
+		};
 
 		this.target = target;
 

@@ -8,10 +8,11 @@ export class TaskRepair extends Task {
 
 	public target: repairTargetType;
 
-	constructor(target: repairTargetType, settings?: ITaskSettings, alias?: string) {
-		super(TaskRepair.taskName, target, settings, alias);
+	constructor(target: repairTargetType, settings: ITaskSettings = {}, alias?: string) {
+		// Settings
+		settings = _.defaults(settings, { targetRange: TASK_TARGET_RANGES.REPAIR } as ITaskSettings);
 
-		this.settings.targetRange = TASK_TARGET_RANGES.REPAIR;
+		super(TaskRepair.taskName, target, settings, alias);
 	}
 
 	public isValidTask(): boolean {
