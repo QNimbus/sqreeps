@@ -1,7 +1,7 @@
-import { isSqreep } from "declarations/typeGuards";
-import { Task } from "tasks/Task";
-import { Tasks } from "tasks/Tasks";
-import { log } from "console/log";
+import { isSqreep } from 'declarations/typeGuards';
+import { Task } from 'tasks/Task';
+import { Tasks } from 'tasks/Tasks';
+import { log } from 'console/log';
 
 export const TASK_TARGET_RANGES = {
 	BUILD: 3,
@@ -11,6 +11,7 @@ export const TASK_TARGET_RANGES = {
 	WITHDRAW: 1,
 	HARVEST: 1,
 	DROP: 0,
+	PICKUP: 0,
 	GOTO: 1,
 };
 
@@ -70,23 +71,13 @@ export class Qreep {
 	}
 
 	get link(): string {
-		return (
-			'<a href="#!/room/' +
-			Game.shard.name +
-			"/" +
-			this.pos.roomName +
-			'">[' +
-			this.name +
-			"]</a>"
-		);
+		return '<a href="#!/room/' + Game.shard.name + '/' + this.pos.roomName + '">[' + this.name + ']</a>';
 	}
 
 	get task(): Task | undefined {
 		if (!this._task) {
 			// initializeTask returns a new Task based on the properties in the creep memory (taskPrototype)
-			this._task = this.memory.task
-				? Tasks.initialize(this.memory.task)
-				: undefined;
+			this._task = this.memory.task ? Tasks.initialize(this.memory.task) : undefined;
 		}
 		return this._task;
 	}
@@ -132,11 +123,11 @@ export class Qreep {
 			try {
 				// let role = roles(roleName);
 				// role.run(this);
-			} catch (e) { }
+			} catch (e) {}
 		}
 	}
 
-	public run = function (this: Qreep): number | undefined {
+	public run = function(this: Qreep): number | undefined {
 		if (this.task) {
 			return this.task.run();
 		}
@@ -220,7 +211,6 @@ export class Qreep {
 	public rangedAttack = Creep.prototype.rangedAttack;
 	public rangedHeal = Creep.prototype.rangedHeal;
 	public rangedMassAttack = Creep.prototype.rangedMassAttack;
-	public picrepairkup = Creep.prototype.repair;
 	public reserveController = Creep.prototype.reserveController;
 	public repair = Creep.prototype.repair;
 	public say = Creep.prototype.say;
@@ -237,20 +227,12 @@ export class Qreep {
 	 * @returns {number}
 	 * @memberof Qreep
 	 */
-	public static bodyPartCost(
-		body: Array<BodyPartConstant> | BodyPartConstant
-	): number {
-		let bodyParts: Array<BodyPartConstant> = Array.prototype.concat(
-			[],
-			body
-		);
+	public static bodyPartCost(body: Array<BodyPartConstant> | BodyPartConstant): number {
+		let bodyParts: Array<BodyPartConstant> = Array.prototype.concat([], body);
 
-		return bodyParts.reduce(
-			(costs: number, currentValue: BodyPartConstant) => {
-				return (costs += BODYPART_COST[currentValue]);
-			},
-			0
-		);
+		return bodyParts.reduce((costs: number, currentValue: BodyPartConstant) => {
+			return (costs += BODYPART_COST[currentValue]);
+		}, 0);
 	}
 
 	/**
@@ -259,14 +241,10 @@ export class Qreep {
 	 * @param {string} role
 	 * @returns {(string | undefined)}
 	 */
-	public static generateName = function (role: string): string | undefined {
+	public static generateName = function(role: string): string | undefined {
 		let currentCount = Qreep.countCreeps(role);
-		let candidateNames = [...Array(currentCount + 1)].map(
-			(_, index) => `${role}${index + 1}`
-		);
-		let creepNames = _.filter(Object.keys(Game.creeps), creepName =>
-			creepName.startsWith(role)
-		);
+		let candidateNames = [...Array(currentCount + 1)].map((_, index) => `${role}${index + 1}`);
+		let creepNames = _.filter(Object.keys(Game.creeps), creepName => creepName.startsWith(role));
 
 		for (let name of candidateNames) {
 			if (!_.contains(creepNames, name)) {
@@ -276,9 +254,7 @@ export class Qreep {
 		return undefined;
 	};
 
-	public static countCreeps = function (role?: string): number {
-		return _.filter(Game.creeps, creep =>
-			role ? creep.memory.role === role : true
-		).length;
+	public static countCreeps = function(role?: string): number {
+		return _.filter(Game.creeps, creep => (role ? creep.memory.role === role : true)).length;
 	};
 }

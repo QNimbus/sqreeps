@@ -1,7 +1,7 @@
 import { Qreep } from 'qreep/Qreep';
 import { Tasks } from './Tasks';
 import { log } from 'console/log';
-import { nullTargetRef } from 'utils/types';
+import { nullTargetRef, nullCreepRef } from 'utils/types';
 
 type targetType = { ref: string; pos: IPos };
 
@@ -33,16 +33,11 @@ export abstract class Task {
 	private _targetPos: RoomPosition;
 	private _creep?: Qreep;
 
-	constructor(
-		taskName: string,
-		target: targetType,
-		settings: ITaskSettings = {},
-		alias?: string
-	) {
+	constructor(taskName: string, target: targetType, settings: ITaskSettings = {}, alias?: string) {
 		this.name = taskName;
 		this.alias = alias ? alias : taskName;
 
-		this.creepRef = { name: '' };
+		this.creepRef = nullCreepRef;
 		this.targetRef = nullTargetRef;
 
 		this.target = target;
@@ -64,13 +59,7 @@ export abstract class Task {
 	 * @memberof Task
 	 */
 	get isNearTarget(): boolean {
-		return (
-			this.hasCreepAssigned &&
-			this.creep!.pos.inRangeTo(
-				this.targetPos,
-				this.settings.targetRange!
-			)
-		);
+		return this.hasCreepAssigned && this.creep!.pos.inRangeTo(this.targetPos, this.settings.targetRange!);
 	}
 
 	/**
@@ -92,9 +81,7 @@ export abstract class Task {
 	 */
 	get creep(): Qreep | undefined {
 		if (!this._creep) {
-			this._creep = this.creepRef.name
-				? new Qreep(Game.creeps[this.creepRef.name])
-				: undefined;
+			this._creep = this.creepRef.name ? new Qreep(Game.creeps[this.creepRef.name]) : undefined;
 		}
 		return this._creep;
 	}
@@ -132,9 +119,7 @@ export abstract class Task {
 	}
 
 	get nextTask(): Task | undefined {
-		return this.nextTaskRef
-			? Tasks.initialize(this.nextTaskRef)
-			: undefined;
+		return this.nextTaskRef ? Tasks.initialize(this.nextTaskRef) : undefined;
 	}
 
 	set nextTask(task: Task | undefined) {
@@ -224,13 +209,7 @@ export abstract class Task {
 			// Move to next task (this.nextTask can be undefined, in which case the task chain is completed)
 			this.creep!.task = this.nextTask;
 		} else {
-			log.debug(
-				`No creep executing ${this.name}! Task: ${JSON.stringify(
-					this.taskPrototype,
-					undefined,
-					'\t'
-				)}`
-			);
+			log.debug(`No creep executing ${this.name}! Task: ${JSON.stringify(this.taskPrototype, undefined, '\t')}`);
 		}
 	}
 

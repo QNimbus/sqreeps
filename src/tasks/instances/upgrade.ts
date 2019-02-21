@@ -1,31 +1,31 @@
 import { Task } from 'tasks/Task';
-import { TASK_TARGET_RANGES } from 'qreep/Qreep';
+import { TASK_TARGET_RANGES, Qreep } from 'qreep/Qreep';
 
 export type upgradeTargetType = StructureController;
 
 export class TaskUpgrade extends Task {
+	public static taskName = 'upgrade';
 
-    public static taskName = 'upgrade';
+	public target: upgradeTargetType;
 
-    constructor(target: upgradeTargetType, settings?: ITaskSettings, alias?: string) {
-        super(TaskUpgrade.taskName, target, settings, alias);
+	constructor(target: upgradeTargetType, settings?: ITaskSettings, alias?: string) {
+		super(TaskUpgrade.taskName, target, settings, alias);
 
-        this.settings.targetRange = TASK_TARGET_RANGES.UPGRADE;
-    }
+		this.settings.targetRange = TASK_TARGET_RANGES.UPGRADE;
+	}
 
-    public isValidTask(): boolean {
-        return !!this.creep && this.creep.carry.energy > 0;
-    }
+	public isValidTask(): boolean {
+		let creep = this.creep as Qreep;
+		return creep && creep.carry.energy > 0;
+	}
 
-    public isValidTarget(): boolean {
-        return (this.target as upgradeTargetType) && (this.target as upgradeTargetType).my;
-    }
+	public isValidTarget(): boolean {
+		return this.target && this.target.my;
+	}
 
-    public work(): number {
-        return this.creep!.upgradeController((<upgradeTargetType>this.target));
-    }
+	public work(): number {
+		return this.creep!.upgradeController(this.target);
+	}
 
-    public onAssign(): void {
-
-    }
+	public onAssign(): void {}
 }

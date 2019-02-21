@@ -5,28 +5,28 @@ import { TASK_TARGET_RANGES } from 'qreep/Qreep';
 export type harvestTargetType = Source | Mineral;
 
 export class TaskHarvest extends Task {
+	public static taskName = 'harvest';
+	public target: harvestTargetType;
 
-    public static taskName = 'harvest';
+	constructor(target: harvestTargetType, settings?: ITaskSettings, alias?: string) {
+		super(TaskHarvest.taskName, target, settings, alias);
 
-    constructor(target: harvestTargetType, settings?: ITaskSettings, alias?: string) {
-        super(TaskHarvest.taskName, target, settings, alias);
+		this.settings.targetRange = TASK_TARGET_RANGES.HARVEST;
+	}
 
-        this.settings.targetRange = TASK_TARGET_RANGES.HARVEST;
-    }
+	public isValidTask(): boolean {
+		return !!this.creep && _.sum(this.creep.carry) < this.creep.carryCapacity;
+	}
 
-    public isValidTask(): boolean {
-        return !!this.creep && _.sum(this.creep.carry) < this.creep.carryCapacity;
-    }
+	public isValidTarget(): boolean {
+		if (isSource(this.target)) {
+			return (this.target as Source).energy > 0;
+		} else {
+			return (this.target as Mineral).mineralAmount > 0;
+		}
+	}
 
-    public isValidTarget(): boolean {
-        if (isSource(this.target as harvestTargetType)) {
-            return (this.target as Source).energy > 0;
-        } else {
-            return (this.target as Mineral).mineralAmount > 0;
-        }
-    }
-
-    public work(): number {
-        return this.creep!.harvest(this.target as harvestTargetType);
-    }
+	public work(): number {
+		return this.creep!.harvest(this.target);
+	}
 }
