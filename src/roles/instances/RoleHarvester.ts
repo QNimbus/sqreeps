@@ -44,28 +44,43 @@ export class RoleHarvester extends Role {
     }
 
     public handleHarvester(harvester: Qreep): void {
-        // Is the current task still valid or do we need a new task
-        if (!harvester.task || !harvester.task.isValid()) {
-            if (this.constructionSite) {
-                if (!harvester.isFull) {
-                    harvester.task = Tasks.harvest(this.source!);
-                } else {
-                    harvester.task = Tasks.build(this.constructionSite!);
-                }
-                return;
-            }
+        let source = this.source as Source;
 
-            if (this.container) {
-                if (this.container.isFull || !harvester.isFull) {
-                    harvester.task = Tasks.harvest(this.source!);
-                } else {
-                    harvester.task = Tasks.transfer(this.container!);
-                }
-                return;
-            }
-
+        // Do we have a container construction site nearby?
+        if (this.constructionSite) {
             if (!harvester.isFull) {
-                harvester.task = Tasks.harvest(this.source!);
+                // Harvest energy until full
+                harvester.task = Tasks.harvest(source);
+            } else {
+                // Build container
+                harvester.task = Tasks.build(this.constructionSite!);
+            }
+            return;
+        }
+
+        // Are we mining into the container?
+        if (this.container) {
+            if (!harvester.isFull) {
+                harvester.task = Tasks.harvest(source);
+            } else {
+                // Deposit energy in container if possible, otherwise try spawn
+                if (!this.container.isFull) {
+                    harvester.task = Tasks.transfer(this.container);
+                } else {
+                    let nearbyEnergyStructure = Game.spawns['Spawn1']; // TODO: Find nearby energy structure that needs refilling
+                    if (nearbyEnergyStructure && nearbyEnergyStructure.energy < nearbyEnergyStructure.energyCapacity) {
+                        // TODO: Make spawngroup or extensions accesible for Role class instead of hardcoding spawn structure
+                        harvester.task = Tasks.transfer(nearbyEnergyStructure);
+                    } else {
+                        // Drop mine
+                        harvester.task = Tasks.harvest(source);
+                    }
+                }
+            }
+            return;
+        } else {
+            if (!harvester.isFull) {
+                harvester.task = Tasks.harvest(source);
             } else {
                 harvester.task = Tasks.transfer(Game.spawns['Spawn1']);
             }

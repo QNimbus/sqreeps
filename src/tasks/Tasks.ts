@@ -7,6 +7,7 @@ import { gotoTargetType, TaskGoto } from './instances/goto';
 import { TaskInvalid } from './instances/invalid';
 import { log } from 'console/log';
 import { TaskDrop, dropTargetType } from './instances/drop';
+import { TaskRepair, repairTargetType } from './instances/repair';
 
 export class Tasks {
 
@@ -55,6 +56,10 @@ export class Tasks {
 				task = new TaskBuild(target as buildTargetType);
 				break;
 			}
+			case TaskRepair.taskName: {
+				task = new TaskRepair(target as repairTargetType);
+				break;
+			}
 			case TaskGoto.taskName: {
 				task = new TaskGoto(targetPos as gotoTargetType);
 				break;
@@ -93,6 +98,10 @@ export class Tasks {
 
 	public static build(target: buildTargetType, alias?: string): TaskBuild {
 		return new TaskBuild(target, undefined, alias);
+	}
+
+	public static repair(target: repairTargetType, alias?: string): TaskRepair {
+		return new TaskRepair(target, undefined, alias);
 	}
 
 	public static goto(target: gotoTargetType, alias?: string): TaskGoto {

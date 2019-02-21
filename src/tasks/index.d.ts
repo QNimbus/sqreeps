@@ -21,4 +21,5 @@ interface ITargetRef {
 interface ITaskSettings {
     targetRange?: number;
     nextPos?: RoomPosition;
+    once?: boolean;
 }

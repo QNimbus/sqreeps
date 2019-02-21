@@ -1,8 +1,8 @@
-import { Qreep } from "qreep/Qreep";
-import { Tasks } from "./Tasks";
-import { log } from "console/log";
+import { Qreep } from 'qreep/Qreep';
+import { Tasks } from './Tasks';
+import { log } from 'console/log';
+import { nullTargetRef } from 'utils/types';
 
-// type targetType = RoomObject;
 type targetType = { ref: string; pos: IPos };
 
 /**
@@ -42,21 +42,15 @@ export abstract class Task {
 		this.name = taskName;
 		this.alias = alias ? alias : taskName;
 
-		this.creepRef = { name: "" };
-		this.targetRef = {
-			ref: "",
-			pos: {
-				x: -1,
-				y: -1,
-				roomName: "",
-			},
-		};
+		this.creepRef = { name: '' };
+		this.targetRef = nullTargetRef;
 
 		this.target = target;
 
 		this.settings = _.defaults(settings, {
 			targetRange: 1,
 			nextPos: undefined,
+			once: false,
 		});
 	}
 
@@ -181,6 +175,10 @@ export abstract class Task {
 	public run(): number | undefined {
 		if (this.isNearTarget) {
 			let result = this.work();
+
+			if (this.settings.once && result === OK) {
+				this.finish();
+			}
 			return result;
 		} else {
 			this.moveToTarget();
@@ -223,13 +221,14 @@ export abstract class Task {
 	public finish(): void {
 		this.moveToNextPos();
 		if (this.hasCreepAssigned) {
+			// Move to next task (this.nextTask can be undefined, in which case the task chain is completed)
 			this.creep!.task = this.nextTask;
 		} else {
 			log.debug(
 				`No creep executing ${this.name}! Task: ${JSON.stringify(
 					this.taskPrototype,
 					undefined,
-					"\t"
+					'\t'
 				)}`
 			);
 		}
