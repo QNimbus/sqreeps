@@ -4,7 +4,7 @@ import { Tasks } from 'tasks/Tasks';
 
 export class RoleTester extends Role {
 
-    constructor(name: string, obj: HasPos) {
+    constructor(name: string, obj: IHasPos) {
         super(name, obj);
     }
 

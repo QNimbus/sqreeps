@@ -9,6 +9,24 @@ declare namespace NodeJS {
     }
 }
 
+// Creep API interfaces
+
+interface CreepMemory {
+    role: string;
+    room: string;
+
+    task?: ITask;
+    working?: boolean;
+    target?: string;
+}
+
+interface Memory {
+    uuid: number;
+    log: any;
+}
+
+// Custom interfaces
+
 interface IPos {
     x: number;
     y: number;
@@ -25,20 +43,10 @@ interface IDirective {
 
 }
 
-interface CreepMemory {
-    role: string;
-    room: string;
-
-    task?: ITask;
-    working?: boolean;
-    target?: string;
+interface IDominionSiteMemory {
+    [key: string]: any;
 }
 
-interface Memory {
-    uuid: number;
-    log: any;
-}
-
-interface HasPos {
-    pos: RoomPosition
+interface IHasPos {
+    pos: RoomPosition;
 }

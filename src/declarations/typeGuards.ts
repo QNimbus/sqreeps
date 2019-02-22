@@ -41,8 +41,8 @@ export function isResource(obj: RoomObject): obj is Resource {
     return (<Resource>obj).amount !== undefined;
 }
 
-export function hasPos(obj: HasPos | RoomPosition): obj is HasPos {
-    return (<HasPos>obj).pos !== undefined;
+export function hasPos(obj: IHasPos | RoomPosition): obj is IHasPos {
+    return (<IHasPos>obj).pos !== undefined;
 }
 
 export function isCreep(obj: RoomObject): obj is Creep {

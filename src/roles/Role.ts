@@ -5,7 +5,7 @@ export abstract class Role implements IRole {
     public name: string;
     public pos: RoomPosition
 
-    constructor(name: string, obj: HasPos) {
+    constructor(name: string, obj: IHasPos) {
         this.name = name;
         this.pos = obj.pos;
     }

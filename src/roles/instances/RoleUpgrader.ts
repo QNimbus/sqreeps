@@ -10,7 +10,7 @@ export class RoleUpgrader extends Role {
     public container?: StructureContainer;
     public constructionSite?: ConstructionSite<STRUCTURE_CONTAINER>;
 
-    constructor(name: string, obj: HasPos) {
+    constructor(name: string, obj: IHasPos) {
         super(name, obj);
 
         this.findRelevantSites();

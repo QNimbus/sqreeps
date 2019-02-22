@@ -2,7 +2,7 @@ import { Task } from 'tasks/Task';
 import { TASK_TARGET_RANGES } from 'qreep/Qreep';
 import { hasPos } from 'declarations/typeGuards';
 
-export type dropTargetType = { pos: RoomPosition } | RoomPosition;
+export type dropTargetType = IHasPos | RoomPosition;
 
 export class TaskDrop extends Task {
 	public static taskName = 'drop';
@@ -20,9 +20,9 @@ export class TaskDrop extends Task {
 	) {
 		let targetPos: RoomPosition;
 		if (hasPos(target)) {
-			targetPos = target.pos;
+			targetPos = (<IHasPos>target).pos;
 		} else {
-			targetPos = target;
+			targetPos = (<RoomPosition>target);
 		}
 
 		// Settings

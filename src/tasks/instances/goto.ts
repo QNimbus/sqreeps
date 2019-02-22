@@ -2,7 +2,7 @@ import { Task } from 'tasks/Task';
 import { TASK_TARGET_RANGES } from 'qreep/Qreep';
 import { hasPos } from 'declarations/typeGuards';
 
-export type gotoTargetType = { pos: RoomPosition } | RoomPosition;
+export type gotoTargetType = IHasPos | RoomPosition;
 
 export class TaskGoto extends Task {
 
@@ -11,9 +11,9 @@ export class TaskGoto extends Task {
     constructor(target: gotoTargetType, settings: ITaskSettings = {}, alias?: string) {
         let targetPos: RoomPosition;
         if (hasPos(target)) {
-            targetPos = target.pos;
+            targetPos = (<IHasPos>target).pos;
         } else {
-            targetPos = target;
+            targetPos = (<RoomPosition>target);
         }
 
         // Settings

@@ -12,7 +12,7 @@ export class RoleHarvester extends Role {
 
     public allowDropMining: boolean;
 
-    constructor(name: string, obj: HasPos) {
+    constructor(name: string, obj: IHasPos) {
         super(name, obj);
 
         this.allowDropMining = false; // Allow drop mining at lower levels?

@@ -123,11 +123,11 @@ export class Qreep {
 			try {
 				// let role = roles(roleName);
 				// role.run(this);
-			} catch (e) {}
+			} catch (e) { }
 		}
 	}
 
-	public run = function(this: Qreep): number | undefined {
+	public run = function (this: Qreep): number | undefined {
 		if (this.task) {
 			return this.task.run();
 		}
@@ -241,7 +241,7 @@ export class Qreep {
 	 * @param {string} role
 	 * @returns {(string | undefined)}
 	 */
-	public static generateName = function(role: string): string | undefined {
+	public static generateName = function (role: string): string | undefined {
 		let currentCount = Qreep.countCreeps(role);
 		let candidateNames = [...Array(currentCount + 1)].map((_, index) => `${role}${index + 1}`);
 		let creepNames = _.filter(Object.keys(Game.creeps), creepName => creepName.startsWith(role));
@@ -254,7 +254,7 @@ export class Qreep {
 		return undefined;
 	};
 
-	public static countCreeps = function(role?: string): number {
+	public static countCreeps = function (role?: string): number {
 		return _.filter(Game.creeps, creep => (role ? creep.memory.role === role : true)).length;
 	};
 }
