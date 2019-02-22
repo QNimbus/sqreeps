@@ -4,10 +4,10 @@ export const abs = Math.abs.bind(Math);
 export const pow = Math.pow.bind(Math);
 
 interface toColumnsOpts {
-    padChar: string,
-    justify: boolean,
-    minWidth?: number,
-    minSpacing?: number
+	padChar: string;
+	justify: boolean;
+	minWidth?: number;
+	minSpacing?: number;
 }
 
 /**
@@ -19,7 +19,7 @@ interface toColumnsOpts {
  * @returns {string} HTML string
  */
 export function color(str: string, color: string): string {
-    return `<font color='${color}'>${str}</font>`;
+	return `<font color='${color}'>${str}</font>`;
 }
 
 /**
@@ -32,7 +32,7 @@ export function color(str: string, color: string): string {
  * @returns {number} Returns a number no less than minValue and no more than maxValue
  */
 export function minMax(value: number, minValue: number, maxValue: number): number {
-    return min(minValue, max(value, maxValue));
+	return min(minValue, max(value, maxValue));
 }
 
 /**
@@ -44,24 +44,40 @@ export function minMax(value: number, minValue: number, maxValue: number): numbe
  * @returns {string[]}
  */
 export function toColumns(obj: { [key: string]: string }, opts = {} as toColumnsOpts): string[] {
-    _.defaults(opts, {
-        padChar: ' ',	        // Character to pad with, e.g. "." would be key........val
-        justify: false,	        // Right align values column?
-        minWidth: 0,
-        minSpacing: 1
-    });
+	_.defaults(opts, {
+		padChar: ' ', // Character to pad with, e.g. "." would be key........val
+		justify: false, // Right align values column?
+		minWidth: 0,
+		minSpacing: 1,
+	});
 
-    let ret = [];
-    let keyPadding = _.max(_.map(_.keys(obj), str => str.length)) + opts.minSpacing!;
-    let valPadding = _.max(_.mapValues(obj, str => str.length));
+	let ret = [];
+	let keyPadding = _.max(_.map(_.keys(obj), str => str.length)) + opts.minSpacing!;
+	let valPadding = _.max(_.mapValues(obj, str => str.length));
 
-    for (let key in obj) {
-        if (opts.justify) {
-            ret.push(key.padRight(keyPadding, opts.padChar) + obj[key].padLeft(max(valPadding, opts.minWidth! - keyPadding), opts.padChar));
-        } else {
-            ret.push(key.padRight(max(keyPadding, opts.minWidth!), opts.padChar) + obj[key]);
-        }
-    }
+	for (let key in obj) {
+		if (opts.justify) {
+			ret.push(
+				key.padRight(keyPadding, opts.padChar) +
+					obj[key].padLeft(max(valPadding, opts.minWidth! - keyPadding), opts.padChar)
+			);
+		} else {
+			ret.push(key.padRight(max(keyPadding, opts.minWidth!), opts.padChar) + obj[key]);
+		}
+	}
 
-    return ret;
+	return ret;
+}
+
+/**
+ * Returns a future tick number with a random offset (e.g. +5/-5)
+ * to ensure all caches don't expires at the same time
+ *
+ * @export
+ * @param {number} timeout
+ * @param {number} [offset=5]
+ * @returns {number}
+ */
+export function getCacheExpiration(timeout: number, offset = 5): number {
+	return Game.time + timeout + Math.floor(Math.random() * offset * 2 - offset + 0.5);
 }

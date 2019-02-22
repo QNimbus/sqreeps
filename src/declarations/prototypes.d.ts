@@ -11,7 +11,7 @@ interface Room {
 	spawns: Array<StructureSpawn>;
 	extensions: Array<StructureExtension>;
 	roads: Array<StructureRoad>;
-	walls: Array<StructureWall>;
+	constructedWalls: Array<StructureWall>;
 	ramparts: Array<StructureRampart>;
 	keeperLairs: Array<StructureKeeperLair>;
 	portals: Array<StructurePortal>;
@@ -20,6 +20,9 @@ interface Room {
 	labs: Array<StructureLab>;
 	containers: Array<StructureContainer>;
 	powerBanks: Array<StructurePowerBank>;
+
+	sources: Array<Source>;
+	mineral: Mineral;
 
 	updateStructureCache(this: Room): void;
 }
