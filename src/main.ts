@@ -13,6 +13,7 @@ import { RoleHarvester } from 'roles/instances/RoleHarvester';
 import { RoleUpgrader } from 'roles/instances/RoleUpgrader';
 import { Role } from 'roles/Role';
 import { RoleTester } from 'roles/instances/RoleTester';
+// import profiler from 'Profiler/screeps-profiler';
 
 class Directive implements IDirective {
 	public static initializeRole(flag: Flag): Role | undefined {
@@ -57,6 +58,12 @@ function main(): void {
 }
 
 export const loop = ErrorMapper.wrapLoop(main);
+
+// profiler.enable();
+
+// export function loop(): void {
+// 	profiler.wrap(main);
+// }
 
 // This gets run on each global reset
 function onGlobalReset(): void {

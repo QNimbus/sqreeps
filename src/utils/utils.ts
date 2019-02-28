@@ -78,6 +78,9 @@ export function toColumns(obj: { [key: string]: string }, opts = {} as toColumns
  * @param {number} [offset=5]
  * @returns {number}
  */
-export function getCacheExpiration(timeout: number, offset = 5): number {
+export function getCacheExpiration(timeout: number, offset?: number): number {
+	if (offset === undefined) {
+		offset = Math.ceil(timeout / 10);
+	}
 	return Game.time + timeout + Math.floor(Math.random() * offset * 2 - offset + 0.5);
 }
